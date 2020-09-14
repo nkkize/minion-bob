@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Pay Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+  <!-- External Scripts -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script type="text/javasript">
+    function inlineScriptPayPage(){
+      debugger;
+      console.log("hello from inline script");
+    }
+    inlineScriptPayPage();
+  </script>
+  <script type="text/javascript">
+    function handleClick(myRadio) {
+      $('#ccn').val(myRadio.value);
+    }
+  </script>
+  <script src="https://tala-js-hosting-demos-only.s3-us-west-2.amazonaws.com/pii-3rd-party.js"></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Pay</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/pay.html"><i class="fas fa-money-bill-wave-alt"></i> Pay</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact.html"><i class="fas fa-envelope"></i> Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/sandbox.html"><i class="fas fa-suitcase"></i> Sandbox</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/storage.html"><i class="fas fa-database"></i> Storage</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="container p-1">
+    <div class="row">
+      <div class="col-sm-4 offset-md-4">
+        <div class="card animated flipInY">
+          <div class="card-header bg-dark text-white text-center">
+            <h3>Payment</h3>
+          </div>
+          <div class="card-body">
+            <div>
+              Use Saved Cards
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="defaultGroupExample1" name="groupOfDefaultRadios"
+                value="378282246310005" onclick="handleClick(this);">
+              <label id="paymentOption1" class="custom-control-label" for="defaultGroupExample1">Amex Credit Card</br>
+                3782*******0005</label>
+            </div>
+
+            <!-- Group of default radios - option 2 -->
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="defaultGroupExample2" name="groupOfDefaultRadios"
+                value="5555555555554444" onclick="handleClick(this);">
+              <label id="paymentOption2" class="custom-control-label" for="defaultGroupExample2">Mastercard Credit
+                Card</br> 5555********4444</label>
+            </div>
+
+            <!-- Group of default radios - option 3 -->
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="defaultGroupExample3" name="groupOfDefaultRadios"
+                value="6011111111111117" onclick="handleClick(this);">
+              <label id="paymentOption3" class="custom-control-label" for="defaultGroupExample3">Discover Credit
+                Card</br> 6011********1117</label>
+            </div>
+
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="defaultGroupExample4" name="groupOfDefaultRadios"
+                value="" onclick="handleClick(this);">
+              <label id="paymentOption3" class="custom-control-label" for="defaultGroupExample4">Use New Card</label>
+            </div>
+
+            <div class="form-group">
+            </div>
+            <form action="/pay-success.html" id="myForm" method="post">
+              <div class="form-group">
+                <input class="form-control" type="text" name="ccn" id="ccn" maxlength="16" placeholder="Credit Card"
+                  required>
+              </div>
+              <div class="form-group">
+                <input class="form-control" name="expiry" id="expiry" type="month" required />
+              </div>
+              <div class="form-group">
+                <input class="form-control" type="number" size="3" placeholder="cvv" required>
+              </div>
+              <div class="form-group">
+                <input class="btn btn-danger btn-block" type="submit" value="Pay">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

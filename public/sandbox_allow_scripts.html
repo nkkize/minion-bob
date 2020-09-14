@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Allow Scripts page</title>
+    <style>
+        .iframe-div {
+            width: 500px;
+            border: 1px solid #CCC;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.25);
+            border-width: 0 1px 1px 1px;
+            margin: 10px auto;
+            padding: 1em;
+            overflow: hidden;
+        }
+
+        h1 {
+            font: 2em Helvetica, Arial, Sans-Serif;
+            font-weight: 700;
+            text-align: center;
+            margin: 0;
+        }
+
+        button {
+            margin: 10px 10px;
+            background-color: darkgrey;
+        }
+
+        button+button {
+            float: right;
+        }
+
+        textarea {
+            display: block;
+            width: 494px;
+            height: 100px;
+            margin-bottom: 1em;
+        }
+
+        iframe {
+            display: none
+        }
+    </style>
+    <script>
+        var unsandboxedFrame = document.getElementById('unsandboxed');
+        var sandboxedFrame = document.getElementById('sandboxed');
+
+        function evaluate(frame) {
+            var code = document.getElementById('code').value;
+            // Note that we're sending the message to "*", Sandboxed iframes which lack the 'allow-same-origin' header
+            // don't have an origin which you can target: you'll have to send to any
+            // origin, which might alow some esoteric attacks.
+            frame.contentWindow.postMessage(code, '*');
+        }
+
+        document.getElementById('unsafe').addEventListener('click', function () {
+            evaluate(unsandboxedFrame);
+        });
+        document.getElementById('safe').addEventListener('click', function () {
+            evaluate(sandboxedFrame);
+        });
+
+        // Listen for response messages from the frames.
+        window.addEventListener('message', function (e) {
+            // Normally, you should verify that the origin of the message's sender
+            // was the origin and source you expected. This is easily done for the
+            // unsandboxed frame. The sandboxed frame, on the other hand is more
+            // difficult. Sandboxed iframes which lack the 'allow-same-origin'
+            // header have "null" rather than a valid origin. This means you still
+            // have to be careful about accepting data via the messaging API you
+            // create. Check that source, and validate those inputs!
+            if ((e.origin === "null" && e.source === sandboxedFrame.contentWindow)
+                || (e.origin === "http://192.168.128.36:4000"
+                    && e.source === unsandboxedFrame.contentWindow)) {
+                alert('Result: ' + e.data);
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Home</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pay.html"><i class="fas fa-money-bill-wave-alt"></i> Pay</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact.html"><i class="fas fa-envelope"></i> Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sandbox.html"><i class="fas fa-suitcase"></i> Sandbox</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/storage.html"><i class="fas fa-database"></i> Storage</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="iframe-div">
+        <h1>Ifrme Sandbox allow-scripts Test</h1>
+        <p>allow-scripts: Lets the resource run scripts (but not create popup windows).</p>
+        <p class='lead'>Enter some code in the below text area</p>
+        <textarea id="code">x = 5; if (x == 5) {console.log('z is 42'); z = 42; x = 420; } else z = 0;</textarea>
+
+        <button id='unsafe'>run script in an unsandboxed frame.</button>
+        <button id='safe'>run script in a sandboxed frame.</button>
+
+        <iframe sandbox='allow-scripts' src='https://boards.greenhouse.io/medloop/jobs/1605186'></iframe>
+    </div>
+</body>
+
+</html>
