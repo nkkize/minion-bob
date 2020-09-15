@@ -26,17 +26,22 @@
     <script>
         let db;
         init();
-        async function init() {
-            db = await idb.openDb('userDb', 1, db => {
-                db.createObjectStore('users', { keyPath: 'name' });
-            });
+        setStorageAndCookies();
+        
+        function setStorageAndCookies() {
             if (typeof (Storage) !== "undefined") {
                 localStorage.setItem("full name", "James Bond");
 
                 localStorage.setItem("amex card", "378282246310005");
                 sessionStorage.setItem("master card", "5555555555554444");
             }
-            document.cookie = 'discover=6011111111111117; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/'
+            document.cookie = 'discover=6011111111111117; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+        }
+
+        async function init() {
+            db = await idb.openDb('userDb', 1, db => {
+                db.createObjectStore('users', { keyPath: 'name' });
+            });
             await addUser("James Bond", 30);
             await addInCacheStorge();
         }

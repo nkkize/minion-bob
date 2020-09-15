@@ -1,294 +1,203 @@
 <!DOCTYPE html>
 
 <head>
-   <meta charset="UTF-8">
-   <title>AEGIS Home Page</title>
-   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <meta charset="UTF-8">
+    <title>AEGIS Storage</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 
-   <!-- External Scripts -->
-   <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
-      crossorigin="anonymous"></script>
-   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-
-   <!--
-   <script>
-      const _add = IDBObjectStore.prototype.add;
-      IDBObjectStore.prototype.add = function( value, key ) {
-      //console.log( 'pushing ', value, ' for ', key );
-      console.log("*** key: " + key + " value: " + value);
-      return _add.apply( this, arguments );
-      }
-   </script>
-   <script>
-      const _add_cache = Cache.prototype.add;
-      const _add_all_cache = Cache.prototype.addAll;
-      const _put_cache = Cache.prototype.put;
-
-      Cache.prototype.add = function( request ) {
-        console.log("*** request get: " + JSON.stringify(request));
-        let record = {};
-        if(request instanceof Request){
-           record.url = request.url;
-           record.method = request.method;
-        } else {
-           record.url = request;
+    <!-- External Scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb@3.0.2/build/idb.min.js"></script>
+    <style>
+        .storage-div {
+            width: 1000px;
+            border: 1px solid #CCC;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.25);
+            border-width: 0 1px 1px 1px;
+            margin: 10px auto;
+            padding: 1em;
+            overflow: hidden;
         }
-        return _add_cache.apply( this, arguments );
-      }
-
-      Cache.prototype.addAll = function( requests ) {
-         console.log("*** request addAll: " + JSON.stringify(requests));
-         if(requests && requests.length){
-            requests.forEach(request => {
-               let record = {};
-               if(request instanceof Request){
-                  record.url = request.url;
-                  record.method = request.method;
-               } else {
-                  record.url = request;
-               }
-               
+    </style>
+    <script>
+        let db;
+        init();
+        async function init() {
+            db = await idb.openDb('userDb', 1, db => {
+                db.createObjectStore('users', { keyPath: 'name' });
             });
-         }
-         return _add_all_cache.apply( this, arguments );
-      }
+            if (typeof (Storage) !== "undefined") {
+                localStorage.setItem("full name", "James Bond");
 
-      Cache.prototype.put = function( request ) {
-         console.log("*** request put: " + JSON.stringify(request));
-         let record = {};
-        if(request instanceof Request){
-           record.url = request.url;
-           record.method = request.method;
-        } else {
-           record.url = request;
+                localStorage.setItem("amex card", "378282246310005");
+                sessionStorage.setItem("master card", "5555555555554444");
+            }
+            document.cookie = 'discover=6011111111111117; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/'
+            await addUser("James Bond", 30);
+            await addInCacheStorge();
         }
-         return _put_cache.apply( this, arguments );
-      }
-   </script>
-   -->
 
-   <script>
-      var db;
-      // until we won't need this prefix mess
-      var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
-      var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
-
-      // The initialization of our stuff
-      function init() {
-         if (typeof(Storage) !== "undefined") {
-            localStorage.setItem("Full Name", "firstname lastname");
-            
-            localStorage.setItem("amex card", "378282246310005");
-            sessionStorage.setItem("master card", "5555555555554444");
-         }
-         document.cookie = 'discover=6011111111111117; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/'
-         var dbVersion = 1.0;
-         var openRequest = indexedDB.open("notesDB", dbVersion);
-
-         //handle setup - as the spec like it
-         openRequest.onupgradeneeded = function (e) {
-            console.log("running onupgradeneeded");
-            var thisDb = e.target.result;
-
-            //temp delete if we want to start clean -> 
-            //thisDb.deleteObjectStore("note");
-
-            //Create Note
-            if (!thisDb.objectStoreNames.contains("note")) {
-               console.log("I need to make the note objectstore");
-               var objectStore = thisDb.createObjectStore("note",
-                  { keyPath: "id", autoIncrement: true });
-               objectStore.createIndex("title", "title",
-                  { unique: false });
+        const addInCacheStorge = async () => {
+            if ('caches' in window) {
+                const catCache = await caches.open('minion-cache');
+                const options = {
+                    method: "GET",
+                    headers: new Headers({
+                        'Content-Type': 'text/html'
+                    }),
+                }
+                catCache.put('https://minion-bob.firebaseapp.com/apple.json', new Response('{"first_name": "James", "last_name": "Bond"}'));
             }
-         }
-
-         openRequest.onsuccess = function (e) {
-            db = e.target.result;
-            db.onerror = function (event) {
-               // Generic error handler for all 
-               // errors targeted at this database
-               alert("Database error: " + event.target.errorCode);
-               console.dir(event.target);
-            };
-            // Interim solution for Chrome to create an objectStore. 
-            // Will be deprecated once it's fixed.
-            if (db.setVersion) {
-               console.log("in old setVersion: " + db.setVersion);
-               if (db.version != dbVersion) {
-                  var req = db.setVersion(dbVersion);
-                  req.onsuccess = function () {
-                     var ob = db.createObjectStore("note",
-                        { keyPath: "id", autoIncrement: true });
-                     ob.createIndex("title",
-                        "title", { unique: false });
-                     var trans = req.result;
-                     trans.oncomplete = function (e) {
-                        console.log("== trans oncomplete ==");
-                        displayNotes();
-                     }
-                  };
-               }
-               else {
-                  displayNotes();
-               }
-            }
-            else {
-               displayNotes();
-            }
-         }
-
-         function displayNotes() {
-            console.log("TODO - print something nice on the page");
-         }
-
-         //TEMP TO REMOVE
-         document.querySelector("#test").addEventListener("click", function () {
-            var transaction = db.transaction(["note"], "readwrite");
-            transaction.oncomplete = function (event) {
-               console.log("All done!");
-            };
-
-            transaction.onerror = function (event) {
-               // Don't forget to handle errors!
-               console.dir(event);
-            };
-
-            var objectStore = transaction.objectStore("note");
-            //use put versus add to always write, even if exists
-            var request = objectStore.add({
-               title: "note 1",
-               body: "this is the body " +
-                  Math.floor(Math.random() * 1000)
-            });
-
-            var request_put = objectStore.put({
-               title: "note 1",
-               body: "this is the put body " +
-                  Math.floor(Math.random() * 1000)
-            });
-
-            request.onsuccess = function (event) {
-               console.log("done with insert");
-            };
-
-            request_put.onsuccess = function (event) {
-               console.log("done with put");
-            };
-
-            objectStore.openCursor().onsuccess = function (event) {
-               var cursor = event.target.result;
-               if (cursor) {
-                  console.log(cursor.key);
-                  console.dir(cursor.value);
-                  cursor.continue();
-               }
-               else {
-                  console.log("Done with cursor");
-               }
-            };
-         });
-      }
-   </script>
-   <script>
-     const handleClick = async () => {
-      if ('caches' in window) {
-           const catCache = await caches.open('cat-cache');
-           const options = {
-              method: "GET",
-              headers: new Headers({
-                 'Content-Type': 'text/html'
-              }),
-           }
-           const urls = ['https://minion-bob.firebaseapp.com/cat.json', 'https://minion-bob.firebaseapp.com/dog.json'];
-           catCache.add(new Request('https://minion-bob.firebaseapp.com/ball.json', options))
-           catCache.addAll(urls);
-           catCache.put('https://minion-bob.firebaseapp.com/apple.json', new Response('{"first_name": "James", "last_name": "bond"}'));
         }
-     }
-   </script>
-   <script>
-      function handleLocalClick(){
-         if (typeof(Storage) !== "undefined") {
-            localStorage.setItem("Full Name", "firstname lastname");
-         }
-      }
-   </script>
-   <script>
-      function handleSessionClick(){
-         if (typeof(Storage) !== "undefined") {
-            sessionStorage.setItem("Full Name", "firstname lastname");
-         }
-      }
-   </script>
-   <script>
-      function handleCookiesClick(){
-         document.cookie = 'name=firstname lastname; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/'
-      }
-   </script>
+
+        const addUser = async (name, age) => {
+            let tx = db.transaction('users', 'readwrite');
+
+            try {
+                await tx.objectStore('users').add({ name, age });
+            } catch (err) {
+                if (err.name == 'ConstraintError') {
+                    //ignore
+                } else {
+                    throw err;
+                }
+            }
+        }
+
+        window.addEventListener('unhandledrejection', event => {
+            alert("Error: " + event.reason.message);
+        });
+
+        const addInCacheStorgeOnClick = async () => {
+            if ('caches' in window) {
+                const catCache = await caches.open('minion-cache');
+                const options = {
+                    method: "GET",
+                    headers: new Headers({
+                        'Content-Type': 'text/html'
+                    }),
+                }
+                const urls = ['https://minion-bob.firebaseapp.com/cat.json', 'https://minion-bob.firebaseapp.com/dog.json'];
+                catCache.add(new Request('https://minion-bob.firebaseapp.com/ball.json', options))
+                catCache.addAll(urls);
+            }
+        }
+
+        function handleLocalClick() {
+            if (typeof (Storage) !== "undefined") {
+                localStorage.setItem("Full Name", "John Wick");
+            }
+        }
+
+        function handleSessionClick() {
+            if (typeof (Storage) !== "undefined") {
+                sessionStorage.setItem("Full Name", "John Wick");
+            }
+        }
+
+        function handleCookiesClick() {
+            document.cookie = 'name=John Wick; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/'
+        }
+
+    </script>
+
+    <script>
+       (function () {
+        const _setItemLocal = localStorage.prototype.setItem;
+        ocalStorage.prototype.setItem = function (key, value) {
+            console.log("local storage key: " + key + " value: " + value);
+            // let postData = {
+            //     type: 'storage_data',
+            //     storage_data: {
+            //       local_storage: {
+            //          key: key,
+            //          value: value
+            //       }
+            //     },
+            //     tabUrl: window.location.href
+            // };
+            // window.postMessage(postData, "*");
+            return _setItemLocal.apply(this, arguments);
+        }
+
+        //sessionStorage
+        const _setItemSession= sessionStorage.prototype.setItem;
+        sessionStorage.prototype.setItem = function (key, value) {
+            console.log("session storage key: " + key + " value: " + value);
+            // let postData = {
+            //     type: 'storage_data',
+            //     storage_data: {
+            //       session_storage: {
+            //          key: key,
+            //          value: value
+            //       }
+            //     },
+            //     tabUrl: window.location.href
+            // };
+            // window.postMessage(postData, "*");
+            return _setItemSession.apply(this, arguments);
+        }
+    })();
+    </script>
+
 </head>
 
-<body onload="init()">
-   <!-- HEADER -->
-   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-         <a class="navbar-brand" href="/">Home</a>
-         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-         </button>
-         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-               <li class="nav-item active">
-                  <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="/pay.html"><i class="fas fa-money-bill-wave-alt"></i> Pay</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="/contact.html"><i class="fas fa-envelope"></i> Contact</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="/sandbox.html"><i class="fas fa-suitcase"></i> Sandbox</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="/indexeddb.html"><i class="fas fa-database"></i> indexedDB</a>
-               </li>
-            </ul>
-         </div>
-      </div>
-   </nav>
-   <!-- MAIN CONTENT -->
-
-   <div class="container p-5">
-      <div class="row">
-         <div class="col-sm-4 offset-md-4">
-            <div class="card">
-               <div class="card-header bg-dark text-white text-center">
-                  <h3>Application Storage and Cache Test</h3>
-                </div>
-               <div class="card-body">
-                 <button id="test" class="btn btn-primary btn-block">Add a note in indexedDB</button>
-               </div>
-
-               <div class="card-body">
-                  <button id="test_cache" class="btn btn-primary btn-block" onclick="handleClick()">Test cacheStorage</button>
-                </div>
-                <div class="card-body">
-                  <button id="test_local" class="btn btn-primary btn-block" onclick="handleLocalClick()">Test local storage</button>
-                </div>
-                <div class="card-body">
-                  <button id="test_session" class="btn btn-primary btn-block" onclick="handleSessionClick()">Test session storage</button>
-                </div>
-                <div class="card-body">
-                  <button id="test_cookies" class="btn btn-primary btn-block" onclick="handleCookiesClick()">Test cookies</button>
-                </div>
-             </div>
-         </div>
-      </div>
-   </div>
+<body>
+    <!-- HEADER -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Home</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pay.html"><i class="fas fa-money-bill-wave-alt"></i> Pay</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact.html"><i class="fas fa-envelope"></i> Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sandbox.html"><i class="fas fa-suitcase"></i> Sandbox</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/storage.html"><i class="fas fa-database"></i> Storage</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- MAIN CONTENT -->
+    <div class="storage-div">
+        <div class="card">
+            <h5 class="card-header">Storage and Caches</h5>
+            <div class="card-body">
+                <p class="card-text">Some Data has been inserted on page load in below Storages and Caches</p>
+                <ul>
+                    <li>Cookie</li>
+                    <li>Local Storage</li>
+                    <li>Session Storage</li>
+                    <li>Cache Storage</li>
+                    <li>indexedDB</li>
+                </ul>
+                
+                <p class="card-text">Insert More Data</p>
+                <button type="button" class="btn btn-primary" onclick="handleCookiesClick()">Add a Cookie</button>
+                <button type="button" class="btn btn-secondary" onclick="handleLocalClick()">Add in Local Storage</button>
+                <button type="button" class="btn btn-success" onclick="handleSessionClick()">Add in Session Storage</button>
+                <button type="button" class="btn btn-danger" onclick="addInCacheStorgeOnClick()">Add in Cache Storage</button>
+                <button button type="button" class="btn btn-warning" onclick="addUser('John Wick', 30)">Add in indexedDB</button>
+            </div>
+        </div>
 </body>
 
 </html>
