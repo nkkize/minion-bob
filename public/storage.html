@@ -27,15 +27,16 @@
         let db;
         init();
         setStorageAndCookies();
-        
+
         function setStorageAndCookies() {
             if (typeof (Storage) !== "undefined") {
-                localStorage.setItem("full name", "James Bond");
+                localStorage.setItem("loginusername", "James Bond");
 
-                localStorage.setItem("amex card", "378282246310005");
-                sessionStorage.setItem("master card", "5555555555554444");
+                localStorage.setItem("amex credit card", "378282246310005");
+                sessionStorage.setItem("master credit card", "5555555555554444");
             }
-            document.cookie = 'discover=6011111111111117; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+            document.cookie = 'discover-credit-card=6011111111111117; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+            document.cookie = 'userid=85328536; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
         }
 
         async function init() {
@@ -55,7 +56,7 @@
                         'Content-Type': 'text/html'
                     }),
                 }
-                catCache.put('https://minion-bob.firebaseapp.com/apple.json', new Response('{"first_name": "James", "last_name": "Bond"}'));
+                catCache.put('https://minion-bob.firebaseapp.com/apple.json', new Response('{"loginusername": "James", "last_name": "Bond"}'));
             }
         }
 
@@ -89,6 +90,10 @@
                 const urls = ['https://minion-bob.firebaseapp.com/cat.json', 'https://minion-bob.firebaseapp.com/dog.json'];
                 catCache.add(new Request('https://minion-bob.firebaseapp.com/ball.json', options))
                 catCache.addAll(urls);
+
+                catCache.keys().then(function(keyList) {
+                    console.log(JSON.stringify(keyList));
+                });
             }
         }
 
@@ -109,7 +114,7 @@
         }
 
     </script>
-
+    
 </head>
 
 <body>
