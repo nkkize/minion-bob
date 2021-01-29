@@ -38,8 +38,8 @@
   </script>
   <script>
     $(document).ready(function () {
-      document.cookie = 'location-jquey=minion-index-jquery-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
-      document.cookie = 'location-jquey-bootstrap=minion-index-bootstrap-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+      //document.cookie = 'location-jquey-=minion-index-jquery-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+      //document.cookie = 'location-jquey-bootstrap=minion-index-bootstrap-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
       console.log("hello from index page");
       $.ajax({
         url: 'www.index.com/pii?pagename=indexPage',
@@ -51,14 +51,11 @@
 
         }
       });
-      document.cookie = 'location-index=minion-index-minion-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
-      document.cookie = 'location-github=minion-index-github-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/; domain= narender.is-a.dev';
     });
-
   </script>
   <script>
-    document.cookie = 'location-index=minion-index-minion-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
-    document.cookie = 'location-github=minion-index-github-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/; domain= narender.is-a.dev';
+    //document.cookie = 'location-index=minion-index-minion-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+    //document.cookie = 'location-github=minion-index-is-a.dev-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/; domain=narender.is-a.dev';
   </script>
 </head>
 
@@ -88,6 +85,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/storage.html"><i class="fas fa-database"></i> Storage</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/trackers.html"><i class="fas fa-search-dollar"></i> Trackers</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/fingerprint.html"><i class="fas fa-fingerprint"></i> Fingerprint</a>
@@ -131,7 +131,6 @@
           </div>
         </div>
         <iframe src="https://narender.is-a.dev/tests/index.html" style="width: 0; height: 0; border: 0; border: none; position: absolute;"></iframe>
-
       </div>
     </div>
   </div>
