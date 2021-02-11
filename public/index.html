@@ -6,56 +6,20 @@
   <title>AEGIS Home Page</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
 
   <!-- External Scripts -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <!-- this domain is setting cooking for itself using this script, A - analytics tracker -->
+  <script>
+    document.cookie = 'for-index=accessed; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+  </script>
   
-  <!-- Inline Scripts -->
-  <script id='delme' type="text/javascript">
-    console.log('hello form the script1 which got deleted...');
-  </script>
-
-  <script id='delme1' type="text/javascript">
-    console.log('hello from the script2 which got deleted...');
-  </script>
-
-  <script type="text/javascript">
-    var elem = document.getElementById('delme');
-    elem.parentNode.removeChild(elem);
-  </script>
-
-  <script type="text/javascript">
-    var elem = document.getElementById('delme1');
-    elem.parentNode.removeChild(elem);
-  </script>
-  <script type="text/javasript">
-    function inlineScriptMainPage(){
-      console.log("hello from third party script");
-    }
-    inlineScriptMainPage();
-  </script>
-  <script>
+  <script type="text/javascript" language="javascript">
     $(document).ready(function () {
-      //document.cookie = 'location-jquey-=minion-index-jquery-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
-      //document.cookie = 'location-jquey-bootstrap=minion-index-bootstrap-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+      document.cookie = 'jquey-analytics=analytics; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
+      document.cookie = 'jquey-ref-ana=ref-ana; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
       console.log("hello from index page");
-      $.ajax({
-        url: 'www.index.com/pii?pagename=indexPage',
-        type: 'get',
-        success: function (data) {
-
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-
-        }
-      });
     });
-  </script>
-  <script>
-    //document.cookie = 'location-index=minion-index-minion-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/';
-    //document.cookie = 'location-github=minion-index-is-a.dev-cookie; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/; domain=narender.is-a.dev';
   </script>
 </head>
 
@@ -130,12 +94,28 @@
             </button>
           </div>
         </div>
+
+        <!-- this one sets cookies, and this page calls github from inside passing that cookie in url : D : REFERRED type -->
         <iframe src="https://narender.is-a.dev/tests/index.html" style="width: 0; height: 0; border: 0; border: none; position: absolute;"></iframe>
       </div>
     </div>
   </div>
   <!-- componentID: 1234 -->
   <!--{"headers-added":["Referrer-Policy"],"headers-removed":[]}-->
+
+  <!-- this one will be calles with COOKIE request header : B : VANILLA type -->
+  <script src="https://narender.is-a.dev/tests/isdev.js"></script>
+
+  <script>
+    var sendReq = () => {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://narender.is-a.dev/tests/isdev.js');
+        xhr.setRequestHeader('Cookie', 'aegis');
+        xhr.send();
+    }
+    sendReq();
+  </script>
+
 </body>
 
 </html>
